@@ -158,4 +158,5 @@ class FireBaseAuthenticationMethods {
   static const String PHONE = "phone";
   static const String ANONYMOUSLY = "anonymously";
   static const String CUSTOM = "custom";
+  static const String ALREADY_SIGNED_IN = "already_signed_in";
 }

@@ -88,6 +88,11 @@ abstract class FirebaseDataManager extends AbstractDataManager {
             _user = result.user;
             break;
           }
+        case FireBaseAuthenticationMethods.ALREADY_SIGNED_IN:
+        {
+          _user = _auth.currentUser;
+          break;
+        }
         default:
           {
             //TODO : should probably throw a NotImplementedException

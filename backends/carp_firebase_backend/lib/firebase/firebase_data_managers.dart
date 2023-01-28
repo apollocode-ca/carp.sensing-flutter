@@ -17,11 +17,11 @@ abstract class FirebaseDataManager extends AbstractDataManager {
 
   @override
   Future initialize(
-    String studyDeploymentId,
+    MasterDeviceDeployment deployment,
     DataEndPoint dataEndPoint,
     Stream<DataPoint> data,
   ) async {
-    super.initialize(studyDeploymentId, dataEndPoint, data);
+    super.initialize(deployment, dataEndPoint, data);
     assert(dataEndPoint is FirebaseDataEndPoint);
     firebaseEndPoint = (dataEndPoint as FirebaseDataEndPoint).firebaseEndPoint;
   }
@@ -105,14 +105,15 @@ abstract class FirebaseDataManager extends AbstractDataManager {
 
   @override
   Future close() async {
-    return;
+    super.close();
   }
 
   @override
-  void onDone() => close();
+  Future<void> onDone() => close();
 
   @override
-  void onError(error) => warning('Error in $runtimeType - $error');
+  Future<void> onError(error) async =>
+      warning('Error in $runtimeType - $error');
 }
 
 /// Stores files with [Datum] json objects in the Firebase Storage file store.
@@ -147,16 +148,16 @@ class FirebaseStorageDataManager extends FirebaseDataManager {
   }
 
   Future initialize(
-    String studyDeploymentId,
+    MasterDeviceDeployment deployment,
     DataEndPoint dataEndPoint,
     Stream<DataPoint> data,
   ) async {
-    super.initialize(studyDeploymentId, dataEndPoint, data);
+    super.initialize(deployment, dataEndPoint, data);
     assert(dataEndPoint is FirebaseStorageDataEndPoint);
     this.firebaseStorageDataEndPoint =
         dataEndPoint as FirebaseStorageDataEndPoint;
 
-    fileDataManager.initialize(studyDeploymentId, dataEndPoint, data);
+    fileDataManager.initialize(deployment, dataEndPoint, data);
 
     final FirebaseStorage storage = await firebaseStorage;
     final User? authenticatedUser = await user;
@@ -235,7 +236,8 @@ class FirebaseStorageDataManager extends FirebaseDataManager {
   }
 
   // forward to file data manager
-  void onDataPoint(DataPoint dataPoint) => fileDataManager.write(dataPoint);
+  Future<void> onDataPoint(DataPoint dataPoint) =>
+      fileDataManager.write(dataPoint);
 }
 
 /// Stores CARP json objects in the Firebase Database.
@@ -253,11 +255,11 @@ class FirebaseDatabaseDataManager extends FirebaseDataManager {
   String get type => DataEndPointTypes.FIREBASE_DATABSE;
 
   Future initialize(
-    String studyDeploymentId,
+    MasterDeviceDeployment deployment,
     DataEndPoint dataEndPoint,
     Stream<DataPoint> data,
   ) async {
-    super.initialize(studyDeploymentId, dataEndPoint, data);
+    super.initialize(deployment, dataEndPoint, data);
     assert(dataEndPoint is FirebaseDatabaseDataEndPoint);
     firebaseDatabaseDataEndPoint =
         dataEndPoint as FirebaseDatabaseDataEndPoint?;
@@ -320,7 +322,7 @@ class FirebaseDatabaseDataManager extends FirebaseDataManager {
     return false;
   }
 
-  void onDataPoint(DataPoint dataPoint) => uploadData(dataPoint);
+  Future<void> onDataPoint(DataPoint dataPoint) => uploadData(dataPoint);
 }
 
 /// A status event for this Firebase data manager.

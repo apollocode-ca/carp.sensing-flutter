@@ -1,5 +1,6 @@
 import 'package:carp_core/carp_core.dart';
 import 'package:carp_firebase_backend/carp_firebase_backend.dart';
+import 'package:carp_mobile_sensing/carp_mobile_sensing.dart';
 
 void main() {
   // Using email/password as authentication
@@ -22,12 +23,13 @@ void main() {
           zip: true,
           encrypt: false);
 
-  MasterDeviceDeployment deployment = MasterDeviceDeployment(
-    deviceDescriptor: Smartphone(),
-    configuration: DeviceRegistration(),
-  )..dataEndPoint = storageEndPoint;
+  StudyProtocol carpProtocol = SmartphoneStudyProtocol(
+    ownerId: 'AB',
+    name: 'Track patient movement',
+    dataEndPoint: storageEndPoint,
+  );
 
-  print(deployment);
+  print(carpProtocol);
 
   // Using Google Sign-In as authentication
   final FirebaseEndPoint firebaseEndPoint_2 = new FirebaseEndPoint(
@@ -44,7 +46,11 @@ void main() {
       new FirebaseDatabaseDataEndPoint(firebaseEndPoint_2,
           collection: 'carp_data');
 
-  deployment..dataEndPoint = databaseEndPoint;
+  StudyProtocol carpProtocol2 = SmartphoneStudyProtocol(
+    ownerId: 'AB',
+    name: 'Track patient movement',
+    dataEndPoint: databaseEndPoint,
+  );
 
-  print(deployment);
+  print(carpProtocol2);
 }
